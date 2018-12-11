@@ -1,22 +1,17 @@
-<html>
-<head>
-
-</head>
-<body>
-{{#user}}
+<#import "parts/common.ftl" as c/>
+<@c.page>
+User Editor
 <form action="/user" method="post">
-    <input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
-    <input type="hidden" name="id" value="{{id}}"/>
-    User name: <input type="text" name="username" value="{{username}}"/>
+    <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+    <input type="hidden" name="userId" value="${user.id}"/>
+    User name: <input type="text" name="username" value="${user.username}"/>
     <div>
-        {{#all_roles}}
-        <label><input type="checkbox" name="roles">{{name}}</label>
-        {{/all_roles}}
+        <#list roles as role>
+        <label><input type="checkbox" name="${role}" $user.role?seq_contains(role)?string("checked"," ") >${role}</label>
+        </#list>
     </div>
 
 
-    <button type="submit">Save</button>
+    <button type="Submit">Save</button>
 </form>
-{{/user}}
-</body>
-</html>
+</@c.page>

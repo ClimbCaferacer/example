@@ -1,10 +1,7 @@
-<html>
-<head>
+<#import "parts/common.ftl" as c/>
 
-</head>
-<body>
-
-
+<@c.page>
+List of users
 <table>
     <thread>
     <tr>
@@ -13,17 +10,15 @@
         <th></th>
     </tr>
     </thread>
-{{#users}}
+
     <tbody>
+        <#list users as user>
         <tr>
-        <td>{{username}}</td>
-        <td class="list" type="text/css" href="/css/main.css">{{roles}}</td>
-        <td><a href="/user/{{id}}">edit</a></td>
+            <td>${user.username}</td>
+            <td><#list user.roles as role>${role}<#sep>, </#list> </td>
+            <td><a href="/user/${user.id}">edit</a></td>
         </tr>
+        </#list>
     </tbody>
-{{/users}}
 </table>
-
-
-</body>
-</html>
+</@c.page>
