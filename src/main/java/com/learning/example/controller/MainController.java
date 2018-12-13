@@ -4,7 +4,8 @@ import com.learning.example.domain.Message;
 import com.learning.example.domain.User;
 import com.learning.example.repos.MessageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,14 +13,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
-
+import java.util.UUID;
 @Controller
 public class MainController {
 
     @Autowired
     private MessageRepo messageRepo;
+
+    @Value("${upload.path}")
+    private String uploadPath;
 
     @GetMapping("/login")
     public String login(Map<String,Object> model) {
@@ -48,20 +57,33 @@ public class MainController {
         return "main";
     }
 
-    @PostMapping
-    public String add(  @AuthenticationPrincipal User user,
+    @PostMapping("/main")
+    public String add(
                         @RequestParam String text,
                         @RequestParam String tag,
-                        Map<String,Object> model) {
-
-
+                        @RequestParam("file") MultipartFile file,
+                        Model model,
+                        @AuthenticationPrincipal User user) throws IOException {
         Message message = new Message(text, tag, user);
 
+        if(file != null) {
+            File uploadDir = new File(uploadPath);
+            if(!uploadDir.exists()) {
+                uploadDir.mkdir();
+            }
+            String uuidfile = UUID.randomUUID().toString();
+            String resultFilename = uuidfile + "." + file.getOriginalFilename();
+            file.transferTo(new File(uploadPath + "/" + resultFilename));
+
+            System.out.println(uploadPath + "/" + resultFilename);
+
+            message.setFilename(resultFilename);
+        }
         messageRepo.save(message);
 
         Iterable<Message> messages = messageRepo.findAll();
 
-        model.put("messages",messages);
+        model.addAttribute("messages",messages);
 
         return "main";
     }
