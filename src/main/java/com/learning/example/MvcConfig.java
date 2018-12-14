@@ -19,6 +19,8 @@ public class MvcConfig implements WebMvcConfigurer {
         System.out.println("file:///" + uploadPath + "/");
         registry.addResourceHandler("/img/**")
                 .addResourceLocations("file:///" + uploadPath + "/");
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");
     }
 
     @Override

@@ -26,6 +26,9 @@ public class User implements UserDetails {
         this.id = id;
     }
 
+    public boolean isAdmin() {
+        return roles.contains(Role.ADMIN);
+    }
 
     public String getUsername() {
         return username;
